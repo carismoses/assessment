@@ -40,7 +40,6 @@ def object_to_urdf(object_name, object):
     rgb = np.random.uniform(0, 1, 3)
     link_urdf = odio_urdf.Link(object_name,
                   odio_urdf.Inertial(
-                      odio_urdf.Origin(xyz=object.com, rpy=(0, 0, 0)),
                       odio_urdf.Mass(value=object.mass),
                       odio_urdf.Inertia(ixx=0.001,
                                         ixy=0,
@@ -72,8 +71,17 @@ def object_to_urdf(object_name, object):
     object_urdf = odio_urdf.Robot(link_urdf)
     return object_urdf
 
-def render_objects(objects, obj_ps, time_steps=500, vis_frames=False):
-    client = p.connect(p.GUI)
+def step():
+    p.stepSimulation()
+
+def disconnect():
+    p.disconnect()
+
+def setup_env(objects, obj_ps, vis=True, vis_frames=False, contact_regions=None):
+    if vis:
+        client = p.connect(p.GUI)
+    else:
+        client = p.connect(p.DIRECT)
     p.configureDebugVisualizer(p.COV_ENABLE_GUI,0)
     p.configureDebugVisualizer(p.COV_ENABLE_MOUSE_PICKING, 0)
     p.resetDebugVisualizerCamera(
@@ -83,7 +91,7 @@ def render_objects(objects, obj_ps, time_steps=500, vis_frames=False):
         cameraTargetPosition=(0., 0., 0.))
     p.setGravity(0, 0, -10)
 
-    obj_models = []
+    obj_models = {}
     for obj in obj_ps:
         if obj == 'ground':
             plane_id = p.loadURDF("plane_files/plane.urdf", obj_ps[obj])
@@ -92,12 +100,40 @@ def render_objects(objects, obj_ps, time_steps=500, vis_frames=False):
             with open(obj+'.urdf', 'w') as handle:
                 handle.write(str(object_urdf))
             obj_model = p.loadURDF(obj+'.urdf', obj_ps[obj])
-            obj_models.append(obj_model)
+            obj_models[obj] = obj_model
             if vis_frames:
                 pos,quat = p.getBasePositionAndOrientation(obj_model, 0)
                 vis_frame(pos, quat, lifeTime=1000)
 
+    return obj_models
+
+def render_objects(objects, obj_ps, time_steps=500, vis_frames=False, contact_regions=None):
+    setup_env(objects, obj_ps, True, vis_frames, contact_regions)
+    simulate(time_steps)
+
+def simulate(time_steps=500):
     for t in range(time_steps):
-        p.stepSimulation()
+        step()
         time.sleep(.001)
-    p.disconnect()
+    disconnect()
+
+def get_position(object_id):
+    return p.getBasePositionAndOrientation(object_id)[0]
+
+def get_orientation(object_id):
+    return p.getBasePositionAndOrientation(object_id)[1]
+
+def get_linear_velocity(object_id):
+    return p.getBaseVelocity(object_id)[0]
+
+def get_angular_velocity(object_id):
+    return p.getBaseVelocity(object_id)[1]
+
+def get_contact_state(object_a_id, object_b_id):
+    SimpleContactPoint = namedtuple('SimpleContactPoint',
+                            'positionOnA positionOnB contactNormalOnB')
+    contact_points = p.getContactPoints(object_a_id, object_b_id, -1, -1)
+    simple_contact_points = []
+    for point in contact_points:
+        simple_contact_points.append(SimpleContactPoint(*point[5:8]))
+    return simple_contact_points
