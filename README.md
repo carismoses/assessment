@@ -20,9 +20,9 @@ Students applying and completing this assignment should have completed courses 6
 
 I ran everything on a Mac, but I can try to help debug platform issues.
 
-1. Fork this repository into your GitHub account, clone it, and cd into it
+1. Clone this repository and ```cd``` into it
 2. Run ```pip3 install .``` to get dependencies
 3. Run ```pip3 install git+https://github.com/hauptmech/odio_urdf``` (another dependency)
 4. Run ```jupyter notebook assignment.ipynb``` to launch a notebook in a browser
 5. Fill in the required coding portions and questions
-6. When you are finished, commit and push your answers to your fork. Send me an email linking to your repo. You can either add me as a collaboarator or make the repo public.
+6. When you are finished, create a zip file with your code and email it to me
