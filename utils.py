@@ -107,7 +107,7 @@ def setup_env(objects, obj_ps, vis=True, vis_frames=False, contact_regions=None)
 
     return obj_models
 
-def render_objects(objects, obj_ps, time_steps=500, vis_frames=False, contact_regions=None):
+def render_objects(objects, obj_ps, time_steps=10000, vis_frames=False, contact_regions=None):
     setup_env(objects, obj_ps, True, vis_frames, contact_regions)
     simulate(time_steps)
 
