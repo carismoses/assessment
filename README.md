@@ -12,6 +12,7 @@ Students applying and completing this assignment should have completed courses 6
 
 ### Requirements
 
+- **I have had some students with issues running the pyBullet simulator on Windows machines. Unfortunately I cannot help debug these issue so please try to run this code on a Linux or Mac machine.**
 - Python 3.7 (probably will work with earlier versions, but try to use this version)
 - pip3
 - git
