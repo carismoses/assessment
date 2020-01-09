@@ -2,6 +2,7 @@ import odio_urdf
 import numpy as np
 import pybullet as p
 import time
+from collections import namedtuple
 
 def transformation(pos, translation_vec, quat, inverse=False):
     """ Converts a position from one frame to another
